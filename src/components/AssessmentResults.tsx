@@ -6,12 +6,13 @@ import type { CarbonInsights } from "@/lib/carbon-insights-types";
 import WhatIfSimulator from "@/components/WhatIfSimulator";
 import RoadmapGenerator from "@/components/RoadmapGenerator";
 import ProgressTracker from "@/components/ProgressTracker";
+import PriorityActions from "./PriorityActions";
 import {
   calculateCarbonFootprint,
-  formatFootprint
-  type AssessmentInput,
+  formatFootprint,
 } from "@/lib/carbon-calculator";
-import PriorityActions from "./PriorityActions";
+import type { AssessmentInput } from "@/lib/carbon-calculator";
+
 
 
 const DIFFICULTY_LABELS: Record<string, string> = {

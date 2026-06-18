@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { CarbonInsights } from "@/lib/carbon-insights-types";
 import WhatIfSimulator from "@/components/WhatIfSimulator";
+import RoadmapGenerator from "@/components/RoadmapGenerator";
 import {
   calculateCarbonFootprint,
   formatFootprint,
@@ -215,6 +216,11 @@ export default function AssessmentResults({
       <WhatIfSimulator
         currentEmissions={footprint.totalKgCO2e}
       />
+      <RoadmapGenerator
+        biggestSource={insights?.biggestEmissionSource?.label || "Transportation"}
+      />
+
+
       <h3 className="mt-10 text-lg font-semibold text-emerald-950 dark:text-emerald-50">Your responses</h3>
       <dl className="mt-4 space-y-4">
         {stepTitles.map((s) => (

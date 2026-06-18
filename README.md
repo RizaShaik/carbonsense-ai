@@ -1,36 +1,185 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CarbonSense AI
 
-## Getting Started
+## Overview
 
-First, run the development server:
+CarbonSense AI is a web application that helps users understand and reduce their personal carbon footprint.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Users answer a short sustainability assessment covering transportation, travel, diet, and household energy usage. The application calculates an estimated carbon footprint, provides a category-wise emissions breakdown, generates AI-powered insights, and suggests practical actions to reduce emissions.
+
+The project combines deterministic carbon calculations with Gemini-powered explanations to create a personalized sustainability assistant.
+
+---
+
+## Challenge Vertical
+
+**Sustainability & Climate Action**
+
+CarbonSense AI helps users become more aware of their environmental impact and encourages informed decisions that can contribute to lower carbon emissions.
+
+---
+
+## Features
+
+### Carbon Footprint Assessment
+
+Users provide information about:
+
+* Transportation habits
+* Daily commute distance
+* Flights taken per year
+* Diet type
+* Monthly electricity usage
+
+The application converts these inputs into an estimated annual carbon footprint.
+
+### Emissions Breakdown
+
+Results are categorized into:
+
+* Transportation
+* Flights
+* Food
+* Home Energy
+
+Users can quickly identify which activities contribute most to their emissions.
+
+### AI-Powered Insights
+
+Gemini analyzes the assessment results and generates personalized observations.
+
+Examples include:
+
+* Major sources of emissions
+* High-impact areas for improvement
+* Sustainability recommendations based on user responses
+
+### What-If Simulator
+
+The What-If Simulator allows users to explore how lifestyle changes could affect their estimated emissions.
+
+This helps users understand the potential impact of different sustainability choices before making them.
+
+### Personalized Roadmap Generator
+
+Based on the user's highest emission category, the application generates a tailored improvement roadmap.
+
+Examples:
+
+* Transportation-focused recommendations
+* Home energy reduction strategies
+* Food and diet improvement suggestions
+
+This creates a more actionable experience than simply displaying emissions data.
+
+### Automated Testing
+
+The project includes unit tests for the carbon footprint calculation logic.
+
+Test coverage verifies:
+
+* Positive footprint calculations
+* Emissions increase with additional flights
+* Emissions increase with longer commutes
+* Lower emissions for vegan diets compared to omnivore diets
+* Breakdown percentage consistency
+
+---
+
+## How Gemini Is Used
+
+Gemini is used to generate personalized sustainability insights from the calculated assessment results.
+
+The application first computes emissions using predefined carbon estimation logic and then provides Gemini with structured results. Gemini converts those results into natural-language recommendations and observations that are easier for users to understand and act upon.
+
+---
+
+## Application Flow
+
+1. User completes sustainability assessment
+2. Carbon calculator estimates emissions
+3. Emissions are categorized by source
+4. Gemini generates personalized insights
+5. What-If Simulator explores potential reductions
+6. Roadmap Generator provides targeted next steps
+
+---
+
+## Tech Stack
+
+* Next.js
+* TypeScript
+* Tailwind CSS
+* Google Gemini API
+* Jest
+
+---
+
+## Project Structure
+
+```text
+src/
+├── app/
+├── components/
+│   ├── AssessmentResults.tsx
+│   ├── WhatIfSimulator.tsx
+│   └── RoadmapGenerator.tsx
+├── lib/
+│   └── carbon-calculator.ts
+└── tests/
+    └── carbonCalculator.test.ts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+git clone https://github.com/RizaShaik/carbonsense-ai.git
 
-## Learn More
+cd carbonsense-ai
 
-To learn more about Next.js, take a look at the following resources:
+npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Open:
 
-## Deploy on Vercel
+```text
+http://localhost:3000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Running Tests
+
+```bash
+npm test
+```
+
+---
+
+## Assumptions
+
+* Carbon footprint values are estimates intended for educational purposes.
+* User-provided information is self-reported.
+* Results are designed to raise awareness and encourage sustainable choices rather than provide certified carbon accounting.
+
+---
+
+## Future Improvements
+
+Potential enhancements include:
+
+* More detailed transportation calculations
+* Renewable energy recommendations
+* Goal tracking and progress monitoring
+* Historical footprint comparisons
+* Region-specific emissions factors
+* Expanded sustainability categories
+
+---
+
+## Conclusion
+
+CarbonSense AI combines carbon footprint estimation, Gemini-powered insights, interactive exploration, and personalized recommendations to help users better understand their environmental impact and identify practical opportunities for improvement.

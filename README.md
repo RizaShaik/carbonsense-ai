@@ -10,6 +10,20 @@ The project combines deterministic carbon calculations with Gemini-powered expla
 
 ---
 
+## Live Demo
+
+https://carbonsense-ai-six.vercel.app/
+
+## Screenshots
+
+![Homepage](image.png)
+
+![Results](image-1.png)
+
+![Simulator](image-2.png)
+
+![Roadmap](image-3.png)
+
 ## Challenge Vertical
 
 **Sustainability & Climate Action**

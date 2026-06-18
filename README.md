@@ -85,6 +85,26 @@ Examples:
 
 This creates a more actionable experience than simply displaying emissions data.
 
+### Priority Action Ranking
+
+The application ranks recommended sustainability actions according to their expected impact.
+
+Instead of presenting generic suggestions, CarbonSense AI prioritizes actions that can deliver the greatest emissions reduction based on the user's largest emission source.
+
+Examples:
+
+* Reduce driving — High Impact
+* Use public transport — Medium Impact
+* Walk for short trips — Low Impact
+
+This improves decision-making by helping users focus on the most effective actions first.
+
+### Carbon Progress Tracker
+
+The Carbon Progress Tracker estimates how a user's emissions could decrease over time if recommended actions are followed.
+
+The tracker provides a simple projection of future reductions, helping users visualize long-term sustainability progress and maintain motivation.
+
 ### Automated Testing
 
 The project includes unit tests for the carbon footprint calculation logic.
@@ -97,13 +117,41 @@ Test coverage verifies:
 * Lower emissions for vegan diets compared to omnivore diets
 * Breakdown percentage consistency
 
----
 
 ## How Gemini Is Used
 
 Gemini is used to generate personalized sustainability insights from the calculated assessment results.
 
 The application first computes emissions using predefined carbon estimation logic and then provides Gemini with structured results. Gemini converts those results into natural-language recommendations and observations that are easier for users to understand and act upon.
+
+---
+
+## Smart Assistant Behavior
+
+CarbonSense AI acts as an intelligent sustainability assistant by:
+
+* Identifying the user's largest emission source
+* Generating personalized sustainability insights
+* Creating category-specific reduction roadmaps
+* Prioritizing actions based on expected impact
+* Projecting future carbon reduction progress
+
+Rather than displaying emissions data alone, the assistant helps users understand, prioritize, and track meaningful sustainability improvements.
+
+---
+
+## Decision-Making Logic
+
+The application follows a structured decision-making process:
+
+1. Calculate emissions across transportation, flights, food, and home energy categories.
+2. Identify the highest contributing emission source.
+3. Generate targeted recommendations specific to that category.
+4. Rank actions according to estimated environmental impact.
+5. Allow users to simulate alternative lifestyle choices.
+6. Project future reductions through progress tracking.
+
+This approach ensures recommendations are personalized, explainable, and actionable rather than generic.
 
 ---
 
@@ -114,7 +162,9 @@ The application first computes emissions using predefined carbon estimation logi
 3. Emissions are categorized by source
 4. Gemini generates personalized insights
 5. What-If Simulator explores potential reductions
-6. Roadmap Generator provides targeted next steps
+6. Roadmap Generator creates tailored recommendations
+7. Priority Actions ranks recommendations by impact
+8. Progress Tracker projects future emission reductions
 
 ---
 

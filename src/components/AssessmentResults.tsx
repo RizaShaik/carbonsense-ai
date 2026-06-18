@@ -5,11 +5,13 @@ import { useEffect, useMemo, useState } from "react";
 import type { CarbonInsights } from "@/lib/carbon-insights-types";
 import WhatIfSimulator from "@/components/WhatIfSimulator";
 import RoadmapGenerator from "@/components/RoadmapGenerator";
+import ProgressTracker from "@/components/ProgressTracker";
 import {
   calculateCarbonFootprint,
-  formatFootprint,
+  formatFootprint
   type AssessmentInput,
 } from "@/lib/carbon-calculator";
+import PriorityActions from "./PriorityActions";
 
 
 const DIFFICULTY_LABELS: Record<string, string> = {
@@ -219,7 +221,15 @@ export default function AssessmentResults({
       <RoadmapGenerator
         biggestSource={insights?.biggestEmissionSource?.label || "Transportation"}
       />
-
+      <PriorityActions
+        biggestSource={
+        insights?.biggestEmissionSource?.label ||
+        "Transportation"
+      }
+      />
+      <ProgressTracker
+        currentEmissions={footprint.totalKgCO2e}
+      />
 
       <h3 className="mt-10 text-lg font-semibold text-emerald-950 dark:text-emerald-50">Your responses</h3>
       <dl className="mt-4 space-y-4">

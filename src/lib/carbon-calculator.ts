@@ -5,6 +5,8 @@ export type AssessmentInput = {
   dietType: string;
   electricityBill: string;
   shoppingFrequency?: string;
+  distanceUnit?: "km" | "miles";
+  electricityCurrency?: "USD" | "INR";
 };
 
 export type FootprintCategory =
@@ -57,6 +59,7 @@ const WORK_DAYS_PER_YEAR = 250;
 const FLIGHT_AVG_MILES = 1000;
 const FLIGHT_KG_PER_MILE = 0.255;
 const AVG_ELECTRICITY_RATE_USD = 0.16;
+const INR_TO_USD = 0.012;
 const GRID_KG_PER_KWH = 0.42;
 /** Scales electricity estimate to approximate total home energy (gas, heating). */
 const HOME_ENERGY_MULTIPLIER = 1.25;
@@ -70,8 +73,12 @@ function calculateTransportation(input: AssessmentInput): number {
   const mode = input.transportation;
   const factor = TRANSPORT_FACTORS_KG_PER_MILE[mode] ?? TRANSPORT_FACTORS_KG_PER_MILE["car-gas"];
   const baselineMiles = BASELINE_MILES_PER_YEAR[mode] ?? BASELINE_MILES_PER_YEAR["car-gas"];
-  const annualCommuteMiles = parseNonNegative(input.commuteDistance) * WORK_DAYS_PER_YEAR;
-
+  const commuteValue = parseNonNegative(
+    input.commuteDistance
+  );
+  const commuteMiles = (input.distanceUnit ?? "km") === "km" ? commuteValue * 0.621371 : commuteValue;
+  const annualCommuteMiles = commuteMiles * WORK_DAYS_PER_YEAR;
+  
   return (annualCommuteMiles + baselineMiles) * factor;
 }
 
@@ -86,7 +93,11 @@ function calculateFood(input: AssessmentInput): number {
 
 function calculateHomeEnergy(input: AssessmentInput): number {
   const monthlyBill = parseNonNegative(input.electricityBill);
-  const monthlyKwh = monthlyBill / AVG_ELECTRICITY_RATE_USD;
+  let billUSD = monthlyBill;
+  if ((input.electricityCurrency ?? "INR") === "INR") {
+    billUSD = monthlyBill * INR_TO_USD;
+  }
+  const monthlyKwh = billUSD / AVG_ELECTRICITY_RATE_USD;
   const annualElectricityKg = monthlyKwh * 12 * GRID_KG_PER_KWH;
 
   return annualElectricityKg * HOME_ENERGY_MULTIPLIER;

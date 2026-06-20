@@ -13,6 +13,8 @@ const initialAnswers: AssessmentAnswers = {
   dietType: "",
   electricityBill: "",
   shoppingFrequency: "",
+  distanceUnit: "km",
+  electricityCurrency: "INR",
 };
 
 type StepOption = {
@@ -57,12 +59,13 @@ const steps: Step[] = [
   {
     id: "commuteDistance",
     title: "Daily commute distance",
-    description: "Round-trip distance to work or school each day. Enter 0 if you work from home.",
+    description:
+      "Round-trip distance to work or school each day. Enter 0 if you work from home.",
     type: "number",
     placeholder: "e.g. 20",
-    unit: "miles",
+    unit: "km",
     min: 0,
-  },
+},
   {
     id: "flightsPerYear",
     title: "Flights per year",
@@ -85,15 +88,16 @@ const steps: Step[] = [
       { value: "vegan", label: "Vegan", description: "No animal products" },
     ],
   },
-  {
+ {
     id: "electricityBill",
-    title: "Monthly electricity bill",
-    description: "Your average monthly electricity cost helps estimate home energy use.",
+    title: "Monthly electricity cost",
+    description:
+      "Your average monthly electricity bill helps estimate home energy use.",
     type: "number",
-    placeholder: "e.g. 120",
-    unit: "USD",
+    placeholder: "e.g. 3000",
+    unit: "INR",
     min: 0,
-  },
+},
   {
     id: "shoppingFrequency",
     title: "Shopping frequency",
@@ -117,6 +121,7 @@ function formatAnswer(step: Step, value: string): string {
   if (!value) return "—";
   if (step.type === "choice") return getChoiceLabel(step, value);
   if (step.unit === "USD") return `$${value}`;
+  if (step.unit === "INR") return `₹${value}`;
   if (step.unit) return `${value} ${step.unit}`;
   return value;
 }
@@ -240,9 +245,11 @@ export default function AssessmentForm() {
             {step.title}
           </label>
           <div className="relative max-w-xs">
-            {step.unit === "USD" && (
-              <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-emerald-900/50 dark:text-emerald-100/50">
-                $
+            {(step.unit === "USD" || step.unit === "INR") && (
+              <span
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-emerald-900/50 dark:text-emerald-100/50"
+              >
+                {step.unit === "USD" ? "$" : "₹"}
               </span>
             )}
             <input
@@ -255,7 +262,7 @@ export default function AssessmentForm() {
               value={currentValue}
               onChange={(e) => updateAnswer(e.target.value)}
               className={`w-full rounded-xl border border-emerald-900/20 bg-white py-3 text-lg text-emerald-950 placeholder:text-emerald-900/30 focus:border-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-600/20 dark:border-emerald-100/20 dark:bg-emerald-950 dark:text-emerald-50 dark:placeholder:text-emerald-100/30 ${
-                step.unit === "USD" ? "pl-8 pr-4" : "px-4"
+                step.unit === "USD" || step.unit === "INR" ? "pl-8 pr-4" : "px-4"
               }`}
             />
           </div>

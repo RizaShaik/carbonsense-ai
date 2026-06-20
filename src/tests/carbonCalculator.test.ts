@@ -7,9 +7,11 @@ describe("Carbon Calculator", () => {
   const baseInput: AssessmentInput = {
     transportation: "car-gas",
     commuteDistance: "10",
+    distanceUnit: "km",
     flightsPerYear: "2",
     dietType: "omnivore",
-    electricityBill: "100",
+    electricityBill: "3000",
+    electricityCurrency: "INR",
   };
 
   test("calculates a positive carbon footprint", () => {

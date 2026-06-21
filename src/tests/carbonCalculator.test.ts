@@ -156,4 +156,48 @@ describe("Carbon Calculator", () => {
 
     expect(total).toBe(result.totalKgCO2e);
   });
+
+  test("km conversion works correctly", () => {
+    const kmInput = calculateCarbonFootprint({
+      ...baseInput,
+      commuteDistance: "16.09",
+      distanceUnit: "km",
+    });
+
+    const mileInput = calculateCarbonFootprint({
+      ...baseInput,
+      commuteDistance: "10",
+      distanceUnit: "miles",
+    });
+
+    expect(kmInput.totalKgCO2e).toBeCloseTo(
+      mileInput.totalKgCO2e,
+      0
+    );
+  });
+
+  test("INR conversion produces valid emissions", () => {
+    const result = calculateCarbonFootprint({
+      ...baseInput,
+      electricityBill: "3000",
+      electricityCurrency: "INR",
+    });
+
+    expect(result.totalKgCO2e).toBeGreaterThan(0);
+  });
+
+  test("zero values do not crash calculator", () => {
+    const result = calculateCarbonFootprint({
+      transportation: "bike-walk",
+      commuteDistance: "0",
+      distanceUnit: "km",
+      flightsPerYear: "0",
+      dietType: "vegan",
+      electricityBill: "0",
+      electricityCurrency: "INR",
+    });
+
+    expect(result.totalKgCO2e).toBeGreaterThanOrEqual(0);
+  });
+
 });

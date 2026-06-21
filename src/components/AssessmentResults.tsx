@@ -22,6 +22,13 @@ const DIFFICULTY_LABELS: Record<string, string> = {
   challenging: "Challenging",
 };
 
+const CATEGORY_ICONS: Record<string, string> = {
+  transportation: "🚗",
+  flights: "✈️",
+  food: "🍽️",
+  homeEnergy: "🏠",
+};
+
 type AssessmentResultsProps = {
   answers: Required<AssessmentInput>;
   onRestart: () => void;
@@ -118,65 +125,118 @@ export default function AssessmentResults({
         Based on your answers, here is your estimated annual carbon footprint.
       </p>
 
-      <div className="mt-8 rounded-2xl bg-emerald-950 p-6 text-emerald-50 sm:p-8">
+      <div className="mt-8 rounded-3xl bg-emerald-950 p-8 text-emerald-50 shadow-xl sm:p-10">
         <p className="text-sm font-medium uppercase tracking-widest text-emerald-400">
-          Estimated annual footprint
+          Estimated Annual Footprint
         </p>
-        <div className="mt-6 rounded-xl border p-6">
-          <h3 className="text-lg font-bold">
-            Global Benchmark
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+
+          {/* Sustainability Grade */}
+          <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6">
+            <p className="text-sm uppercase tracking-wider text-emerald-300">
+              Sustainability Grade
+            </p>
+
+            <div className="mt-4">
+              <span
+                className={`inline-flex h-20 w-20 items-center justify-center rounded-full text-4xl font-bold ${
+                  sustainabilityGrade === "A"
+                    ? "bg-green-500 text-white"
+                    : sustainabilityGrade === "B"
+                    ? "bg-lime-500 text-white"
+                    : sustainabilityGrade === "C"
+                    ? "bg-yellow-500 text-black"
+                    : sustainabilityGrade === "D"
+                    ? "bg-orange-500 text-white"
+                    : "bg-red-500 text-white"
+                }`}
+              >
+                {sustainabilityGrade}
+              </span>
+            </div>
+
+            <p className="mt-4 text-sm text-emerald-200">
+              Based on your annual emissions
+            </p>
+          </div>
+
+          {/* Global Benchmark */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <p className="text-sm uppercase tracking-wider text-emerald-300">
+              Global Benchmark
+            </p>
+
+            <div className="mt-4 space-y-2">
+              <p>
+                Your Footprint:
+                <strong> {footprint.totalTonnesCO2e} tCO₂e</strong>
+              </p>
+
+              <p>
+                Global Average:
+                <strong> 4.7 tCO₂e</strong>
+              </p>
+
+              <p className="font-semibold text-emerald-300">
+                {footprint.totalTonnesCO2e > globalAverage
+                  ? `${difference}% above average`
+                  : `${Math.abs(Number(difference))}% below average`}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 text-center">
+          <p className="text-xs uppercase tracking-[0.3em] text-emerald-300">
+            Your Annual Carbon Footprint
+          </p>
+
+          <p className="mt-4 text-6xl font-extrabold tracking-tight">
+            {formatFootprint(footprint.totalKgCO2e)}
+          </p>
+
+          <p className="mt-3 text-base text-emerald-200/70">
+            {footprint.totalKgCO2e.toLocaleString()} kg CO₂e per year
+          </p>
+        </div>
+
+        <div className="mt-12">
+          <h3 className="mb-6 text-xl font-semibold text-emerald-100">
+            Emissions Breakdown
           </h3>
 
-          <p className="mt-2">
-            Your Footprint:
-            <strong>
-              {" "}
-              {footprint.totalTonnesCO2e} tCO₂e
-            </strong>
-          </p>
+          <div className="grid gap-4">
+            {footprint.breakdown.map((item) => (
+              <div
+                key={item.category}
+                className="rounded-2xl border border-white/10 bg-white/5 p-5"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="font-medium">
+                    {CATEGORY_ICONS[item.category]} {item.label}
+                  </span>
 
-          <p>
-            Global Average:
-            <strong> 4.7 tCO₂e</strong>
-          </p>
+                  <span className="font-semibold">
+                    {formatFootprint(item.kgCO2e)}
+                  </span>
+                </div>
 
-          <p className="mt-2 font-semibold">
-            {footprint.totalTonnesCO2e > globalAverage
-              ? `${difference}% above average`
-              : `${Math.abs(Number(difference))}% below average`}
-          </p>
-        </div>
-        <div className="mt-4">
-          <span className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-bold text-emerald-950">
-            Sustainability Grade: {sustainabilityGrade}
-          </span>
-        </div>
-        <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
-          {formatFootprint(footprint.totalKgCO2e)}
-        </p>
-        <p className="mt-1 text-sm text-emerald-100/60">
-          {footprint.totalKgCO2e.toLocaleString()} kg CO₂e per year
-        </p>
+                <div className="h-3 overflow-hidden rounded-full bg-white/10">
+                  <div
+                    className="h-full rounded-full bg-emerald-400 transition-all duration-700"
+                    style={{
+                      width: `${item.percentage}%`,
+                    }}
+                  />
+                </div>
 
-        <div className="mt-8 space-y-4">
-          <p className="text-sm font-semibold text-emerald-200">Breakdown by category</p>
-          {footprint.breakdown.map((item) => (
-            <div key={item.category}>
-              <div className="mb-1.5 flex items-center justify-between text-sm">
-                <span>{item.label}</span>
-                <span className="font-medium">
-                  {formatFootprint(item.kgCO2e)}{" "}
-                  <span className="text-emerald-100/50">({item.percentage}%)</span>
-                </span>
+                <p className="mt-2 text-sm text-emerald-200/80">
+                  {item.percentage}% of total emissions
+                </p>
               </div>
-              <div className="h-2 overflow-hidden rounded-full bg-emerald-900">
-                <div
-                  className="h-full rounded-full bg-emerald-400 transition-all duration-500"
-                  style={{ width: `${item.percentage}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 

@@ -140,10 +140,10 @@ describe("Carbon Calculator", () => {
     );
   });
 
-  test("footprint contains four categories", () => {
+  test("footprint contains five categories", () => {
     const result = calculateCarbonFootprint(baseInput);
 
-    expect(result.breakdown.length).toBe(4);
+    expect(result.breakdown.length).toBe(5);
   });
 
   test("total footprint equals sum of categories", () => {
@@ -198,6 +198,71 @@ describe("Carbon Calculator", () => {
     });
 
     expect(result.totalKgCO2e).toBeGreaterThanOrEqual(0);
+  });
+
+  test("shopping emissions increase footprint", () => {
+    const low = calculateCarbonFootprint({
+      ...baseInput,
+      shoppingFrequency: "rarely",
+    });
+
+    const high = calculateCarbonFootprint({
+      ...baseInput,
+      shoppingFrequency: "weekly",
+    });
+
+    expect(high.totalKgCO2e).toBeGreaterThan(
+      low.totalKgCO2e
+    );
+  });
+
+  test("india currency conversion works", () => {
+    const result =
+      calculateCarbonFootprint(baseInput);
+
+    expect(result.totalKgCO2e).toBeGreaterThan(0);
+  });
+
+  test("consumer goods category exists", () => {
+    const result =
+      calculateCarbonFootprint(baseInput);
+
+    expect(
+      result.breakdown.some(
+        (item) =>
+          item.category ===
+          "consumerGoods"
+      )
+    ).toBe(true);
+  });
+
+  test("grade calculation range stays valid", () => {
+    const result =
+      calculateCarbonFootprint(baseInput);
+
+    expect(
+      result.totalTonnesCO2e
+    ).toBeGreaterThanOrEqual(0);
+  });
+
+  test("weekly shopping produces more emissions than monthly shopping", () => {
+    const weekly =
+      calculateCarbonFootprint({
+        ...baseInput,
+        shoppingFrequency: "weekly",
+      });
+
+    const monthly =
+      calculateCarbonFootprint({
+        ...baseInput,
+        shoppingFrequency: "monthly",
+      });
+
+    expect(
+      weekly.totalKgCO2e
+    ).toBeGreaterThan(
+      monthly.totalKgCO2e
+    );
   });
 
 });

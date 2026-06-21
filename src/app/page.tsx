@@ -122,7 +122,7 @@ export default function Home() {
               </h1>
               <p className="mt-6 text-lg leading-relaxed text-emerald-900/70 sm:text-xl dark:text-emerald-100/70">
                 CarbonSense AI makes it easy to measure your carbon footprint
-                and discover meaningful ways to reduce it — powered by
+                and discover meaningful ways to reduce it - powered by
                 intelligent, personalized guidance.
               </p>
               <div className="mt-10">
@@ -148,7 +148,7 @@ export default function Home() {
                 <div className="mt-6 space-y-4 text-base leading-relaxed text-emerald-900/70 sm:text-lg dark:text-emerald-100/70">
                   <p>
                     Your carbon footprint is the total amount of greenhouse
-                    gases — primarily carbon dioxide — released into the
+                    gases - primarily carbon dioxide - released into the
                     atmosphere as a result of your daily activities. Everything
                     from how you commute, what you eat, and how you heat your
                     home contributes to it.
@@ -201,7 +201,7 @@ export default function Home() {
               </h2>
               <p className="mt-4 text-lg leading-relaxed text-emerald-100/70">
                 We turn complex climate data into a clear, personal action plan
-                — so you can focus on what matters instead of getting lost in
+                - so you can focus on what matters instead of getting lost in
                 the numbers.
               </p>
             </div>

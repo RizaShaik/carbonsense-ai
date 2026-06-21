@@ -102,8 +102,8 @@ ${breakdownLines}
 
 ## Instructions
 1. Identify the biggest emission source from the breakdown data. Use the exact category key and label from the breakdown.
-2. Provide 3–5 personalized recommendations tied to this user's specific lifestyle answers — not generic advice.
-3. Provide 2–4 estimated yearly reduction opportunities with realistic kg CO₂e savings based on their data.
+2. Provide 3-5 personalized recommendations tied to this user's specific lifestyle answers - not generic advice.
+3. Provide 2-4 estimated yearly reduction opportunities with realistic kg CO₂e savings based on their data.
 
 Keep language clear, encouraging, and practical. Round estimatedReductionKg to whole numbers.`;
 }
@@ -176,7 +176,7 @@ function buildFallbackInsights(input: CarbonInsightsInput): CarbonInsights {
     recommendations.push({
       title: "Fly less, stay longer",
       description:
-        "Combine trips and choose direct flights when possible — takeoffs and landings produce the most emissions.",
+        "Combine trips and choose direct flights when possible - takeoffs and landings produce the most emissions.",
       category: "flights",
     });
     reductions.push({
@@ -190,7 +190,7 @@ function buildFallbackInsights(input: CarbonInsightsInput): CarbonInsights {
     recommendations.push({
       title: "Shift toward plant-based meals",
       description:
-        "Start with one or two meat-free days per week — diet changes are among the most effective personal actions.",
+        "Start with one or two meat-free days per week - diet changes are among the most effective personal actions.",
       category: "food",
     });
     reductions.push({

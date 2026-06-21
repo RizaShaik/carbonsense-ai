@@ -64,16 +64,32 @@ export default function PriorityActions({
         Priority Actions
       </h2>
 
-      <ol className="space-y-3">
-        {recommendations.map((item, index) => (
-          <li key={item.action}>
-            <strong>{index + 1}.</strong>{" "}
-            {item.action}
-            {" — "}
-            <strong>{item.impact} Impact</strong>
-          </li>
+      <div className="space-y-3">
+        {recommendations.map((item) => (
+          <div
+            key={item.action}
+            className="rounded-xl border p-4"
+          >
+            <div className="flex flex-col md:flex-row md:justify-between gap-2 items-center">
+              <span className="font-medium">
+                {item.action}
+              </span>
+
+              <span
+                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                  item.impact === "High"
+                    ? "bg-red-100 text-red-700"
+                    : item.impact === "Medium"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : "bg-green-100 text-green-700"
+                }`}
+              >
+                {item.impact}
+              </span>
+            </div>
+          </div>
         ))}
-      </ol>
+      </div>
     </div>
   );
 }

@@ -8,6 +8,8 @@ import RoadmapGenerator from "@/components/RoadmapGenerator";
 import ProgressTracker from "@/components/ProgressTracker";
 import PriorityActions from "./PriorityActions";
 import GoalSetter from "@/components/GoalSetter";
+import EmissionChart from "@/components/EmissionChart";
+import jsPDF from "jspdf";
 import {
   calculateCarbonFootprint,
   formatFootprint,
@@ -27,6 +29,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   flights: "✈️",
   food: "🍽️",
   homeEnergy: "🏠",
+  consumerGoods: "🛍️",
 };
 
 type AssessmentResultsProps = {
@@ -42,11 +45,31 @@ export default function AssessmentResults({
   formatAnswer,
   stepTitles,
 }: AssessmentResultsProps) {
-  const footprint = useMemo(() => calculateCarbonFootprint(answers), [answers]);
   const [insights, setInsights] = useState<CarbonInsights | null>(null);
   const [insightsLoading, setInsightsLoading] = useState(true);
   const [insightsError, setInsightsError] = useState<string | null>(null);
+  const [hydratedAnswers, setHydratedAnswers] = useState<Required<AssessmentInput> | null>(null);
+  const activeAnswers = hydratedAnswers ?? answers;
+  const footprint = useMemo(
+    () => calculateCarbonFootprint(activeAnswers),
+    [activeAnswers]
+  ); 
+  useEffect(() => {
+    const saved = localStorage.getItem("carbon-assessment");
 
+    if (!saved) return;
+
+    try {
+      const parsed = JSON.parse(saved);
+
+      // defer state update to avoid lint warning
+      queueMicrotask(() => {
+        setHydratedAnswers(parsed);
+      });
+    } catch {
+      console.error("Failed to load saved assessment");
+    }
+  }, []);
   useEffect(() => {
     let cancelled = false;
 
@@ -58,7 +81,10 @@ export default function AssessmentResults({
         const response = await fetch("/api/insights", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ assessment: answers, footprint }),
+          body: JSON.stringify({
+            assessment: activeAnswers,
+            footprint: calculateCarbonFootprint(activeAnswers),
+          }),
         });
 
         if (!response.ok) {
@@ -86,7 +112,7 @@ export default function AssessmentResults({
     return () => {
       cancelled = true;
     };
-  }, [answers, footprint.totalKgCO2e]);
+  }, [activeAnswers]);
 
   const totalPotentialReduction = insights?.reductionOpportunities.reduce(
     (sum, opp) => sum + opp.estimatedReductionKg,
@@ -104,7 +130,14 @@ export default function AssessmentResults({
     ? "D"
     : "E";
 
-  const globalAverage = 4.7;
+  const benchmarks = {
+    Global: 4.7,
+    India: 1.9,
+    USA: 14.7,
+    UK: 5.5,
+  };
+
+  const globalAverage = benchmarks.Global;
 
   const difference =
     (
@@ -112,6 +145,95 @@ export default function AssessmentResults({
         globalAverage) *
       100
     ).toFixed(0);
+
+  const indiaDifference = (
+    ((footprint.totalTonnesCO2e - benchmarks.India) /
+      benchmarks.India) *
+    100
+  ).toFixed(0);
+
+  const usaDifference = (
+    ((footprint.totalTonnesCO2e - benchmarks.USA) /
+      benchmarks.USA) *
+    100
+  ).toFixed(0);
+
+  const treesNeeded = Math.ceil(
+    footprint.totalKgCO2e / 21
+  );
+
+  const carMilesEquivalent = Math.round(
+    footprint.totalKgCO2e / 0.404
+  );
+
+  const electricityEquivalent = Math.round(
+    footprint.totalKgCO2e / 0.42
+  );
+
+  function exportResults() {
+    const data = {
+      footprint,
+      sustainabilityGrade,
+      answers,
+      generatedAt: new Date().toISOString(),
+    };
+
+    const blob = new Blob(
+      [JSON.stringify(data, null, 2)],
+      {
+        type: "application/json",
+      }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "carbon-footprint-report.json";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  async function shareResults() {
+    try {
+      await navigator.share({
+        title: "CarbonSense AI",
+        text: `My annual carbon footprint is ${footprint.totalTonnesCO2e} tCO₂e 🌱`,
+        url: window.location.origin,
+      });
+    } catch {
+      // user cancelled
+    }
+  }
+
+  function exportPDF() {
+    const pdf = new jsPDF();
+
+    pdf.text(
+      "CarbonSense AI Report",
+      20,
+      20
+    );
+
+    pdf.text(
+      `Footprint: ${footprint.totalTonnesCO2e} tCO2e`,
+      20,
+      40
+    );
+
+    pdf.text(
+      `Grade: ${sustainabilityGrade}`,
+      20,
+      60
+    );
+
+    pdf.save(
+      "CarbonSense_Report.pdf"
+    );
+  }
 
   return (
     <div className="rounded-2xl border border-emerald-900/10 bg-white p-6 shadow-sm sm:p-8 dark:border-emerald-100/10 dark:bg-emerald-950/50">
@@ -167,22 +289,44 @@ export default function AssessmentResults({
               Global Benchmark
             </p>
 
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-3">
               <p>
-                Your Footprint:
-                <strong> {footprint.totalTonnesCO2e} tCO₂e</strong>
-              </p>
-
-              <p>
-                Global Average:
+                🌍 Global Average:
                 <strong> 4.7 tCO₂e</strong>
               </p>
 
-              <p className="font-semibold text-emerald-300">
-                {footprint.totalTonnesCO2e > globalAverage
-                  ? `${difference}% above average`
-                  : `${Math.abs(Number(difference))}% below average`}
+              <p>
+                🇮🇳 India Average:
+                <strong> 1.9 tCO₂e</strong>
               </p>
+
+              <p>
+                🇺🇸 USA Average:
+                <strong> 14.7 tCO₂e</strong>
+              </p>
+
+              <div className="pt-2 border-t border-white/10">
+                <p>
+                  {Math.abs(Number(difference))}%
+                  {Number(difference) > 0
+                    ? " above"
+                    : " below"} Global Average
+                </p>
+
+                <p>
+                  {Math.abs(Number(indiaDifference))}%
+                  {Number(indiaDifference) > 0
+                    ? " above"
+                    : " below"} India Average
+                </p>
+
+                <p>
+                  {Math.abs(Number(usaDifference))}%
+                  {Number(usaDifference) > 0
+                    ? " above"
+                    : " below"} USA Average
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -200,11 +344,57 @@ export default function AssessmentResults({
             {footprint.totalKgCO2e.toLocaleString()} kg CO₂e per year
           </p>
         </div>
+        <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6">
+          <h3 className="text-xl font-semibold mb-4">
+            Emission Distribution
+          </h3>
 
+          <EmissionChart
+            data={footprint.breakdown}
+          />
+        </div>
         <div className="mt-12">
           <h3 className="mb-6 text-xl font-semibold text-emerald-100">
             Emissions Breakdown
           </h3>
+
+          <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6">
+            <h3 className="text-lg font-semibold">
+              Real World Impact
+            </h3>
+
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <div>
+                <p className="text-3xl">🌳</p>
+                <p className="mt-2 font-bold">
+                  {treesNeeded}
+                </p>
+                <p className="text-sm text-emerald-200/70">
+                  Trees needed annually
+                </p>
+              </div>
+
+              <div>
+                <p className="text-3xl">🚗</p>
+                <p className="mt-2 font-bold">
+                  {carMilesEquivalent.toLocaleString()}
+                </p>
+                <p className="text-sm text-emerald-200/70">
+                  Car miles equivalent
+                </p>
+              </div>
+
+              <div>
+                <p className="text-3xl">💡</p>
+                <p className="mt-2 font-bold">
+                  {electricityEquivalent.toLocaleString()}
+                </p>
+                <p className="text-sm text-emerald-200/70">
+                  kWh electricity equivalent
+                </p>
+              </div>
+            </div>
+          </div>
 
           <div className="grid gap-4">
             {footprint.breakdown.map((item) => (
@@ -354,21 +544,50 @@ export default function AssessmentResults({
           >
             <dt className="text-sm font-medium text-emerald-900/60 dark:text-emerald-100/60">{s.title}</dt>
             <dd className="text-sm font-semibold text-emerald-950 dark:text-emerald-50">
-              {formatAnswer(s.id, answers[s.id])}
+              {formatAnswer(s.id, activeAnswers[s.id])}
             </dd>
           </div>
         ))}
       </dl>
 
-      <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-        <button
-          type="button"
-          onClick={onRestart}
-          aria-label="Start assessment again"
-          className="inline-flex h-11 items-center justify-center rounded-full border border-emerald-900/20 px-6 text-sm font-semibold text-emerald-950 transition-colors hover:bg-emerald-50 dark:border-emerald-100/20 dark:text-emerald-50 dark:hover:bg-emerald-900/30"
-        >
-          Start over
-        </button>
+      <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <button
+            type="button"
+            onClick={shareResults}
+            aria-label="Share carbon footprint results"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+          >
+            Share Results
+          </button>
+
+          <button
+            type="button"
+            onClick={exportResults}
+            aria-label="Export carbon footprint report as JSON"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-blue-700"
+          >
+            Export Report
+          </button>
+
+          <button
+            onClick={exportPDF}
+            aria-label="Download carbon footprint report as PDF"
+            className="inline-flex h-11 items-center justify-center rounded-full bg-blue-600 px-6 text-sm font-semibold text-white"
+          >
+            Download PDF Report
+          </button>
+
+          <button
+            type="button"
+            onClick={onRestart}
+            aria-label="Start assessment again"
+            className="inline-flex h-11 items-center justify-center rounded-full border border-emerald-900/20 px-6 text-sm font-semibold text-emerald-950 transition-colors hover:bg-emerald-50 dark:border-emerald-100/20 dark:text-emerald-50 dark:hover:bg-emerald-900/30"
+          >
+            Start over
+          </button>
+        </div>
+
         <Link
           href="/"
           aria-label="Return to homepage"
@@ -376,6 +595,7 @@ export default function AssessmentResults({
         >
           Back to home
         </Link>
+
       </div>
     </div>
   );

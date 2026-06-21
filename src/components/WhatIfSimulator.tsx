@@ -7,7 +7,7 @@ interface Props {
 }
 
 export default function WhatIfSimulator({ currentEmissions }: Props) {
-  const [reduction, setReduction] = useState(0);
+  const [selected, setSelected] = useState<string[]>([]);
 
   const scenarios = [
     {
@@ -24,6 +24,19 @@ export default function WhatIfSimulator({ currentEmissions }: Props) {
     },
   ];
 
+  const reduction =
+  scenarios
+    .filter((s) =>
+      selected.includes(
+        s.label
+      )
+    )
+    .reduce(
+      (sum, s) =>
+        sum + s.reduction,
+      0
+    );
+
   return (
     <div className="mt-8 rounded-xl border p-6 shadow-sm">
       <h2 className="text-2xl font-bold mb-4">
@@ -38,7 +51,22 @@ export default function WhatIfSimulator({ currentEmissions }: Props) {
         {scenarios.map((scenario) => (
           <button
             key={scenario.label}
-            onClick={() => setReduction(scenario.reduction)}
+            onClick={() => {
+              setSelected((prev) =>
+                prev.includes(
+                  scenario.label
+                )
+                  ? prev.filter(
+                      (item) =>
+                        item !==
+                        scenario.label
+                    )
+                  : [
+                      ...prev,
+                      scenario.label,
+                    ]
+              );
+            }}
             className="w-full rounded-lg border p-3 text-left hover:bg-gray-50"
           >
             {scenario.label}

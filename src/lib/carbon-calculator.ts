@@ -13,7 +13,8 @@ export type FootprintCategory =
   | "transportation"
   | "flights"
   | "food"
-  | "homeEnergy";
+  | "homeEnergy"
+  | "consumerGoods";
 
 export type FootprintBreakdownItem = {
   category: FootprintCategory;
@@ -55,6 +56,13 @@ const DIET_KG_PER_YEAR: Record<string, number> = {
   vegan: 1000,
 };
 
+const SHOPPING_KG_PER_YEAR: Record<string, number> = {
+  weekly: 1200,
+  biweekly: 800,
+  monthly: 400,
+  rarely: 100,
+};
+
 const WORK_DAYS_PER_YEAR = 250;
 const FLIGHT_AVG_MILES = 1000;
 const FLIGHT_KG_PER_MILE = 0.255;
@@ -91,6 +99,14 @@ function calculateFood(input: AssessmentInput): number {
   return DIET_KG_PER_YEAR[input.dietType] ?? DIET_KG_PER_YEAR.omnivore;
 }
 
+function calculateShopping(input: AssessmentInput): number {
+  return (
+    SHOPPING_KG_PER_YEAR[
+      input.shoppingFrequency ?? "monthly"
+    ] ?? 400
+  );
+}
+
 function calculateHomeEnergy(input: AssessmentInput): number {
   const monthlyBill = parseNonNegative(input.electricityBill);
   let billUSD = monthlyBill;
@@ -121,6 +137,11 @@ export function calculateCarbonFootprint(
       category: "food",
       label: "Food",
       kgCO2e: calculateFood(input),
+    },
+    {
+      category: "consumerGoods",
+      label: "Consumer Goods",
+      kgCO2e: calculateShopping(input),
     },
     {
       category: "homeEnergy",

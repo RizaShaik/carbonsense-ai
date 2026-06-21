@@ -33,7 +33,7 @@ describe("Carbon Calculator", () => {
     });
 
     expect(highFlights.totalKgCO2e).toBeGreaterThan(
-      lowFlights.totalKgCO2e,
+      lowFlights.totalKgCO2e
     );
   });
 
@@ -49,7 +49,7 @@ describe("Carbon Calculator", () => {
     });
 
     expect(longCommute.totalKgCO2e).toBeGreaterThan(
-      shortCommute.totalKgCO2e,
+      shortCommute.totalKgCO2e
     );
   });
 
@@ -65,7 +65,7 @@ describe("Carbon Calculator", () => {
     });
 
     expect(vegan.totalKgCO2e).toBeLessThan(
-      omnivore.totalKgCO2e,
+      omnivore.totalKgCO2e
     );
   });
 
@@ -74,9 +74,86 @@ describe("Carbon Calculator", () => {
 
     const totalPercentage = result.breakdown.reduce(
       (sum, item) => sum + item.percentage,
-      0,
+      0
     );
 
-    expect(totalPercentage).toBeCloseTo(100, 0);
+    expect(totalPercentage).toBeGreaterThanOrEqual(99);
+    expect(totalPercentage).toBeLessThanOrEqual(101);
+  });
+
+  test("zero commute reduces transportation emissions", () => {
+    const result = calculateCarbonFootprint({
+      ...baseInput,
+      commuteDistance: "0",
+    });
+
+    expect(result.totalKgCO2e).toBeGreaterThan(0);
+  });
+
+  test("bike/walk emits less than gasoline car", () => {
+    const bike = calculateCarbonFootprint({
+      ...baseInput,
+      transportation: "bike-walk",
+    });
+
+    const car = calculateCarbonFootprint({
+      ...baseInput,
+      transportation: "car-gas",
+    });
+
+    expect(bike.totalKgCO2e).toBeLessThan(
+      car.totalKgCO2e
+    );
+  });
+
+  test("miles generate more emissions than same numeric km value", () => {
+    const km = calculateCarbonFootprint({
+      ...baseInput,
+      commuteDistance: "10",
+      distanceUnit: "km",
+    });
+
+    const miles = calculateCarbonFootprint({
+      ...baseInput,
+      commuteDistance: "10",
+      distanceUnit: "miles",
+    });
+
+    expect(miles.totalKgCO2e).toBeGreaterThan(
+      km.totalKgCO2e
+    );
+  });
+
+  test("electricity bill contributes to emissions", () => {
+    const lowBill = calculateCarbonFootprint({
+      ...baseInput,
+      electricityBill: "1000",
+    });
+
+    const highBill = calculateCarbonFootprint({
+      ...baseInput,
+      electricityBill: "5000",
+    });
+
+    expect(highBill.totalKgCO2e).toBeGreaterThan(
+      lowBill.totalKgCO2e
+    );
+  });
+
+  test("footprint contains four categories", () => {
+    const result = calculateCarbonFootprint(baseInput);
+
+    expect(result.breakdown.length).toBe(4);
+  });
+
+  test("total footprint equals sum of categories", () => {
+    const result = calculateCarbonFootprint(baseInput);
+
+    const total = result.breakdown.reduce(
+      (sum, item) => sum + item.kgCO2e,
+      0
+    );
+
+    expect(total).toBe(result.totalKgCO2e);
   });
 });

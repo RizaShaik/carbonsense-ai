@@ -7,6 +7,7 @@ import WhatIfSimulator from "@/components/WhatIfSimulator";
 import RoadmapGenerator from "@/components/RoadmapGenerator";
 import ProgressTracker from "@/components/ProgressTracker";
 import PriorityActions from "./PriorityActions";
+import GoalSetter from "@/components/GoalSetter";
 import {
   calculateCarbonFootprint,
   formatFootprint,
@@ -85,6 +86,26 @@ export default function AssessmentResults({
     0,
   );
 
+  const sustainabilityGrade =
+  footprint.totalTonnesCO2e < 4
+    ? "A"
+    : footprint.totalTonnesCO2e < 8
+    ? "B"
+    : footprint.totalTonnesCO2e < 12
+    ? "C"
+    : footprint.totalTonnesCO2e < 16
+    ? "D"
+    : "E";
+
+  const globalAverage = 4.7;
+
+  const difference =
+    (
+      ((footprint.totalTonnesCO2e - globalAverage) /
+        globalAverage) *
+      100
+    ).toFixed(0);
+
   return (
     <div className="rounded-2xl border border-emerald-900/10 bg-white p-6 shadow-sm sm:p-8 dark:border-emerald-100/10 dark:bg-emerald-950/50">
       <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
@@ -101,6 +122,35 @@ export default function AssessmentResults({
         <p className="text-sm font-medium uppercase tracking-widest text-emerald-400">
           Estimated annual footprint
         </p>
+        <div className="mt-6 rounded-xl border p-6">
+          <h3 className="text-lg font-bold">
+            Global Benchmark
+          </h3>
+
+          <p className="mt-2">
+            Your Footprint:
+            <strong>
+              {" "}
+              {footprint.totalTonnesCO2e} tCO₂e
+            </strong>
+          </p>
+
+          <p>
+            Global Average:
+            <strong> 4.7 tCO₂e</strong>
+          </p>
+
+          <p className="mt-2 font-semibold">
+            {footprint.totalTonnesCO2e > globalAverage
+              ? `${difference}% above average`
+              : `${Math.abs(Number(difference))}% below average`}
+          </p>
+        </div>
+        <div className="mt-4">
+          <span className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-bold text-emerald-950">
+            Sustainability Grade: {sustainabilityGrade}
+          </span>
+        </div>
         <p className="mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
           {formatFootprint(footprint.totalKgCO2e)}
         </p>
@@ -231,6 +281,9 @@ export default function AssessmentResults({
       <ProgressTracker
         currentEmissions={footprint.totalKgCO2e}
       />
+      <GoalSetter
+        currentEmissions={footprint.totalKgCO2e}
+      />
 
       <h3 className="mt-10 text-lg font-semibold text-emerald-950 dark:text-emerald-50">Your responses</h3>
       <dl className="mt-4 space-y-4">
@@ -251,12 +304,14 @@ export default function AssessmentResults({
         <button
           type="button"
           onClick={onRestart}
+          aria-label="Start assessment again"
           className="inline-flex h-11 items-center justify-center rounded-full border border-emerald-900/20 px-6 text-sm font-semibold text-emerald-950 transition-colors hover:bg-emerald-50 dark:border-emerald-100/20 dark:text-emerald-50 dark:hover:bg-emerald-900/30"
         >
           Start over
         </button>
         <Link
           href="/"
+          aria-label="Return to homepage"
           className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
         >
           Back to home

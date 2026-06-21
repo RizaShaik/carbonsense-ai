@@ -223,6 +223,7 @@ export default function AssessmentForm() {
                   type="radio"
                   name={step.id}
                   value={option.value}
+                  aria-label={option.label}
                   checked={selected}
                   onChange={() => updateAnswer(option.value)}
                   className="mt-1 h-4 w-4 shrink-0 accent-emerald-600"
@@ -255,6 +256,7 @@ export default function AssessmentForm() {
             <input
               id={step.id}
               type="number"
+              aria-label={step.title}
               inputMode="decimal"
               min={step.min}
               max={step.max}
@@ -277,6 +279,7 @@ export default function AssessmentForm() {
         <button
           type="button"
           onClick={handleBack}
+          aria-label="Go to previous question"
           disabled={currentStep === 0}
           className="inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-50 disabled:pointer-events-none disabled:opacity-40 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
         >
@@ -285,6 +288,11 @@ export default function AssessmentForm() {
         <button
           type="button"
           onClick={handleNext}
+          aria-label={
+            isLastStep
+              ? "Complete assessment"
+              : "Go to next question"
+          }
           disabled={!canProceed}
           className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-emerald-700 disabled:pointer-events-none disabled:opacity-40"
         >

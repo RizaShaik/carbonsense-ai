@@ -57,6 +57,26 @@ Results are categorized into:
 
 Users can quickly identify which activities contribute most to their emissions.
 
+### Sustainability Score
+
+Users receive a sustainability grade based on their estimated annual carbon footprint.
+
+| Grade | Annual Emissions |
+|---------|---------|
+| A | Very Low |
+| B | Low |
+| C | Average |
+| D | High |
+| E | Very High |
+
+This provides an easy-to-understand indicator of environmental impact.
+
+### Global Benchmark Comparison
+
+CarbonSense AI compares the user's estimated footprint against global average annual carbon emissions.
+
+This helps users understand how their lifestyle compares with broader sustainability benchmarks and highlights opportunities for improvement.
+
 ### AI-Powered Insights
 
 Gemini analyzes the assessment results and generates personalized observations.
@@ -72,6 +92,18 @@ Examples include:
 The What-If Simulator allows users to explore how lifestyle changes could affect their estimated emissions.
 
 This helps users understand the potential impact of different sustainability choices before making them.
+
+### Goal Setting
+
+Users can select a carbon reduction target and view projected savings.
+
+Available targets include:
+
+- 5% reduction
+- 10% reduction
+- 20% reduction
+
+The application calculates estimated annual carbon savings and tracks progress toward the selected goal.
 
 ### Personalized Roadmap Generator
 
@@ -105,17 +137,23 @@ The Carbon Progress Tracker estimates how a user's emissions could decrease over
 
 The tracker provides a simple projection of future reductions, helping users visualize long-term sustainability progress and maintain motivation.
 
-### Automated Testing
+### Testing Strategy
 
-The project includes unit tests for the carbon footprint calculation logic.
+The project includes automated Jest tests covering:
 
-Test coverage verifies:
+- Carbon footprint calculations
+- Transportation emission changes
+- Flight emission changes
+- Diet impact comparisons
+- Category breakdown validation
+- Percentage calculations
+- Unit conversion handling
+- Currency conversion handling
+- Edge cases
+- Positive footprint generation
+- Emission comparison scenarios
 
-* Positive footprint calculations
-* Emissions increase with additional flights
-* Emissions increase with longer commutes
-* Lower emissions for vegan diets compared to omnivore diets
-* Breakdown percentage consistency
+These tests help ensure correctness, reliability, and maintainability of the calculation engine.
 
 
 ## How Gemini Is Used
